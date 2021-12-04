@@ -1,6 +1,6 @@
+import { toNumber } from '../../utils'
 import { input } from './input1'
 
-const toNumber = (v) => +v
 let solution = input.trim().split('\n\n')
 
 const nums = solution[0].split(',').map(toNumber)

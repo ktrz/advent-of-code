@@ -1,35 +1,11 @@
+import { equals, mergeLeft } from 'ramda'
+import { not, pluck, sum, toNumber } from '../../utils'
 import { input } from './input1'
-
-const toNumber = (v: string) => +v
-
-const sum = (a: number, b: number) => a + b
 
 const changeIf =
   <E>(predicate: (el: E) => boolean, modify: (el: E) => E) =>
   (el: E) =>
     predicate(el) ? modify(el) : el
-
-const modify =
-  <E>(modification: Partial<E>) =>
-  (el: E): E => ({
-    ...el,
-    ...modification,
-  })
-
-const pluck =
-  <O, K extends keyof O>(key: K) =>
-  (obj: O): O[K] =>
-    obj[key]
-
-const equals =
-  <V>(v: V) =>
-  (w: V) =>
-    v === w
-
-const not =
-  <F extends (...args: any[]) => boolean>(fn: F) =>
-  (...args) =>
-    !fn(...args)
 
 type Board = { nr: number; position: [number, number]; marked: boolean }[]
 const checkBoard = (board: Board) => {
@@ -49,7 +25,7 @@ const checkBoard = (board: Board) => {
       row: [],
     },
   )
-  return col.some(equals(5)) || row.some(equals(5))
+  return [...row, ...col].some(equals(5))
 }
 
 const convertBoardStringToBoard = (board: string) =>
@@ -70,9 +46,7 @@ const convertBoardStringToBoard = (board: string) =>
     .reduce((acc, val) => acc.concat(val), [])
 
 const markBoard = (nr: number) => (board: Board) =>
-  board.map(
-    changeIf((el) => el.nr === nr, modify<Board[number]>({ marked: true })),
-  )
+  board.map(changeIf((el) => el.nr === nr, mergeLeft({ marked: true })))
 
 const calculateScore = (board: Board) =>
   board
