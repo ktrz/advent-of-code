@@ -1,52 +1,52 @@
-import { input } from "./input2";
+import { input } from './input2'
 
 interface PositionWithAim {
-  horizontal: number;
-  depth: number;
-  aim: number;
+  horizontal: number
+  depth: number
+  aim: number
 }
 
 const modifyPositionWithAim =
   (
     key: keyof PositionWithAim,
-    change: number | ((current: PositionWithAim) => number)
+    change: number | ((current: PositionWithAim) => number),
   ) =>
   (position: PositionWithAim) => ({
     ...position,
     [key]:
       position[key] +
-      (typeof change === "function" ? change(position) : change),
-  });
+      (typeof change === 'function' ? change(position) : change),
+  })
 
 const parseInstructionWithAim = (
   instruction: string,
-  value: number
+  value: number,
 ): Array<(x: PositionWithAim) => PositionWithAim> => {
   switch (instruction) {
-    case "forward":
+    case 'forward':
       return [
-        modifyPositionWithAim("horizontal", value),
-        modifyPositionWithAim("depth", ({ aim }) => aim * value),
-      ];
-    case "down":
-      return [modifyPositionWithAim("aim", value)];
-    case "up":
-      return [modifyPositionWithAim("aim", -value)];
+        modifyPositionWithAim('horizontal', value),
+        modifyPositionWithAim('depth', ({ aim }) => aim * value),
+      ]
+    case 'down':
+      return [modifyPositionWithAim('aim', value)]
+    case 'up':
+      return [modifyPositionWithAim('aim', -value)]
     default:
-      return [(x) => x];
+      return [(x) => x]
   }
-};
+}
 
-const readInstruction = (instruction: string) => instruction.split(' ');
+const readInstruction = (instruction: string) => instruction.split(' ')
 
-const initialState = { horizontal: 0, depth: 0, aim: 0 };
+const initialState = { horizontal: 0, depth: 0, aim: 0 }
 const solution = input
   .trim()
-  .split("\n")
+  .split('\n')
   .map(readInstruction)
   .map(([instruction, value]) => [instruction, +value] as [string, number])
   .map(([instruction, value]) => parseInstructionWithAim(instruction, value))
   .reduce((acc, val) => acc.concat(val), [])
-  .reduce((result, fn) => fn(result), initialState);
+  .reduce((result, fn) => fn(result), initialState)
 
-console.log(solution.horizontal * solution.depth);
+console.log(solution.horizontal * solution.depth)
