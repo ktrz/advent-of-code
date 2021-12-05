@@ -1,8 +1,6 @@
-import { isTruthy, sum, toNumber } from "../../utils"
-import { input } from "./input1"
-import { input2 } from "./input2"
-
-
+import { isTruthy, sum, toNumber } from '../../utils'
+import { input } from './input1'
+import { input2 } from './input2'
 
 const calculateDiffs = (v: number, i: number, arr: number[]) =>
   i === 0 ? 0 : v - arr[i - 1]

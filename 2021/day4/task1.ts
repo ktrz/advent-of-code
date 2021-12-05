@@ -19,8 +19,8 @@ const checkBoard = (board: Board) => {
       return res
     },
     {
-      col: [],
-      row: [],
+      col: [] as number[],
+      row: [] as number[],
     },
   )
   res //?
@@ -62,7 +62,7 @@ const calculateScore = (board: Board) =>
     .reduce((a, b) => a + b)
 
 let i = 0
-let lastNum
+let lastNum = 0
 nums
 for (let n of nums) {
   lastNum = n

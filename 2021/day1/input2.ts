@@ -1,5 +1,4 @@
-export 
-const input2 = `
+export const input2 = `
 131
 140
 136

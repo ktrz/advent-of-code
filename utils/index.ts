@@ -11,5 +11,5 @@ export const pluck =
 
 export const not =
   <F extends (...args: any[]) => boolean>(fn: F) =>
-  (...args) =>
+  (...args: any[]) =>
     !fn(...args)

@@ -21,8 +21,8 @@ const checkBoard = (board: Board) => {
       }
     },
     {
-      col: [],
-      row: [],
+      col: [] as number[],
+      row: [] as number[],
     },
   )
   return [...row, ...col].some(equals(5))
@@ -63,7 +63,7 @@ const getSolution = (inputString: string) => {
 
   let firstNum = 0
   let lastNum = 0
-  let firstBoards: Board[]
+  let firstBoards: Board[] | undefined = undefined
   let lastBoards = boards
   let currentBoards = boards
 
@@ -80,7 +80,7 @@ const getSolution = (inputString: string) => {
   }
 
   return {
-    firstScore: firstBoards.map(calculateScore)[0] * firstNum,
+    firstScore: firstBoards!.map(calculateScore)[0] * firstNum,
     lastScore: lastBoards.map(calculateScore)[0] * lastNum,
   }
 }
