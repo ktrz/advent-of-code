@@ -13,3 +13,5 @@ export const not =
   <F extends (...args: any[]) => boolean>(fn: F) =>
   (...args: any[]) =>
     !fn(...args)
+
+export const greaterThan = (x: number) => (y: number) => y > x

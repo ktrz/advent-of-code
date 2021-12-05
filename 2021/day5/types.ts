@@ -7,3 +7,5 @@ export interface Line {
   start: Point
   end: Point
 }
+
+export type Board = number[][]

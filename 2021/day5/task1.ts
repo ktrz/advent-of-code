@@ -1,6 +1,7 @@
 import { input } from './input2'
 import { calculateBoard, extractLine } from './utils'
 import { Line, Point } from './types'
+import { greaterThan } from '../../utils'
 
 const { abs, sign } = Math
 
@@ -39,6 +40,6 @@ const points = lines
     return b
   }, board)
 
-const solution = points.flat().filter((x) => x > 1).length
+const solution = points.flat().filter(greaterThan(1)).length
 
 console.log(solution)
