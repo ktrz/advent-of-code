@@ -23,9 +23,7 @@ export function calculateBoard(lines: Line[]): Board {
   const xMax = max(...lines.map(({ start, end }) => [start.x, end.x]).flat())
   const yMax = max(...lines.map(({ start, end }) => [start.y, end.y]).flat())
 
-  return range(0, xMax).map(() =>
-    range(0, yMax).map(() => 0),
-  )
+  return range(0, xMax).map(() => range(0, yMax).map(() => 0))
 }
 
 export const calculateLinePoints = ({ start, end }: Line): Point[] => {
