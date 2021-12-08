@@ -1,6 +1,28 @@
 import { input } from './input2'
 import { toNumber } from '../../utils'
-import { add } from 'ramda'
+import { add, invert, map } from 'ramda'
+
+const solution = (solutionInput: string) =>
+  solutionInput
+    .trim()
+    .split('\n')
+    .map((line) => line.split(' | '))
+    .map(map((data) => data.split(' ')))
+    .map(([trainingData, inputData]) => ({
+      inputData,
+      mapping: deduceMapping([...trainingData, ...inputData]),
+    }))
+    .map(({ inputData, mapping }) =>
+      inputData
+        .map((value) => ({
+          key: value,
+          values: getPossibleValues(value),
+        }))
+        .map(({ key }) => mapping[sortString(key)])
+        .join(''),
+    )
+    .map(toNumber)
+    .reduce(add, 0)
 
 const defaultMapping = {
   abcefg: 0,
@@ -18,6 +40,10 @@ const defaultMapping = {
 const ONE = 'cf'
 const MIDDLE_DASH = 'd'
 const DIFF_FOUR_AND_ONE = 'bd'
+const DIFF_SEVEN_AND_ONE = 'a'
+const DIFF_EIGHT_AND_FOUR_SEVEN = 'eg'
+
+const sortString = (str: string) => str.split('').sort().join('')
 
 const containsStr = (valueString: string, searchString: string) =>
   searchString.split('').every((char) => valueString.includes(char))
@@ -42,13 +68,12 @@ const calculateDMappingIfPossible = (mapping: Record<string, string>) => {
   }
 }
 
-const deduceMapping = (trainingData: string) => {
-  const possibleValues = trainingData.split(' ').map((value) => ({
-    pattern: value,
-    values: getPossibleValues(value),
-  }))
-
-  const basicMapping = possibleValues
+const deduceMapping = (data: string[]) => {
+  const basicMapping = data
+    .map((value) => ({
+      pattern: value,
+      values: getPossibleValues(value),
+    }))
     .filter(({ values }) => values.length === 1)
     .reduce<Record<number, string>>(
       (res, { values: [v], pattern }) => ({
@@ -59,14 +84,17 @@ const deduceMapping = (trainingData: string) => {
     )
 
   const mapping: Record<string, string> = {
-    a: diffStrings(basicMapping[1], basicMapping[7]),
-    cf: basicMapping[1],
-    bd: diffStrings(basicMapping[1], basicMapping[4]),
-    eg: diffStrings(basicMapping[4] + basicMapping[7], basicMapping[8]),
+    ...basicMapping,
+    [DIFF_SEVEN_AND_ONE]: diffStrings(basicMapping[1], basicMapping[7]),
+    [ONE]: basicMapping[1],
+    [DIFF_FOUR_AND_ONE]: diffStrings(basicMapping[1], basicMapping[4]),
+    [DIFF_EIGHT_AND_FOUR_SEVEN]: diffStrings(
+      basicMapping[4] + basicMapping[7],
+      basicMapping[8],
+    ),
   }
 
-  trainingData
-    .split(' ')
+  data
     .map((value) => ({
       key: value,
       values: getPossibleValues(value),
@@ -81,59 +109,29 @@ const deduceMapping = (trainingData: string) => {
         } else {
           mapping[2] = key
         }
+      } else if (key.length === 6) {
+        if (mapping[MIDDLE_DASH]) {
+          if (!containsStr(key, mapping[MIDDLE_DASH])) {
+            mapping[0] = key
+          } else if (containsStr(key, mapping[ONE])) {
+            mapping[9] = key
+          } else {
+            mapping[6] = key
+          }
+        }
       }
     })
 
-  return mapping
+  return Object.entries(invert(mapping))
+    .map(([key, values]) => [key, values[0]])
+    .map(([key, value]) => [sortString(key), sortString(value)])
+    .reduce<Record<string, string>>(
+      (res, [key, value]) => ({
+        ...res,
+        [key]: value,
+      }),
+      {},
+    )
 }
-
-const solution = (solutionInput: string) =>
-  solutionInput
-    .trim()
-    .split('\n')
-    .map((line) => {
-      const [trainingData, inputData] = line.split(' | ')
-      const mapping = deduceMapping(trainingData)
-
-      return inputData
-        .split(' ')
-        .map((value) => ({
-          key: value,
-          values: getPossibleValues(value),
-        }))
-        .map(({ key, values }) => {
-          switch (key.length) {
-            case 5:
-              if (containsStr(key, mapping[ONE])) {
-                return 3
-              } else {
-                if (containsStr(key, mapping[DIFF_FOUR_AND_ONE])) {
-                                return 5
-                              } else {
-                                return 2
-                              }
-              }
-            case 6: {
-              calculateDMappingIfPossible(mapping)
-              if (mapping[MIDDLE_DASH]) {
-                if (!containsStr(key, mapping[MIDDLE_DASH])) {
-                  return 0
-                } else if (containsStr(key, mapping[ONE])) {
-                  return 9
-                } else {
-                  return 6
-                }
-              }
-              return -1
-            }
-            default: {
-              return values[0]
-            }
-          }
-        })
-        .join('')
-    })
-    .map(toNumber)
-    .reduce(add, 0)
 
 console.log(solution(input))
