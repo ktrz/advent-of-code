@@ -14,11 +14,7 @@ const solution = (solutionInput: string) =>
     }))
     .map(({ inputData, mapping }) =>
       inputData
-        .map((value) => ({
-          key: value,
-          values: getPossibleValues(value),
-        }))
-        .map(({ key }) => mapping[sortString(key)])
+        .map((key) => mapping[sortString(key)])
         .join(''),
     )
     .map(toNumber)
