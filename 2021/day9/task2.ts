@@ -3,7 +3,6 @@ import { isTruthy, mul, toNumber } from '../../utils'
 import { range } from 'ramda'
 import { Basin, Board, Point } from './types'
 
-
 const isLowPoint = (x: number, y: number, board: Board): boolean => {
   const xCheck = range(x - 1, x + 2).filter((v) => v >= 0 && v < board.length)
   const yCheck = range(y - 1, y + 2).filter(
@@ -32,7 +31,6 @@ const findLowPoints = (solutionInput: string) => {
     for (let j = 0; j < line.length; j++) {
       if (isLowPoint(i, j, board)) {
         lowPoints.push([i, j])
-
         sum += board[i][j] + 1
       }
     }
@@ -61,17 +59,11 @@ const getAdjacentPoints = (board: Board, [x, y]: Point): Point[] => {
 }
 
 const isSlope = (board: Board, pStart: Point, pEnd: Point): boolean => {
-  const valueEnd = board[pEnd[0]][pEnd[1]]
-  const valueStart = board[pStart[0]][pStart[1]]
-  const slopeValue = valueEnd - valueStart
-  return valueEnd < 9 && slopeValue > 0
+  const [valueStart, valueEnd] = [pStart, pEnd].map((p) => board[p[0]][p[1]])
+  return valueEnd < 9 && valueEnd - valueStart >= 0
 }
 
-function extracted(
-  board: number[][],
-  points: Point[],
-  lowPoints: Point[],
-): Point[] {
+function calculateBasin(board: number[][], points: Point[]): Point[] {
   const pointsSet = new Set(points.map((p) => p.join(',')))
   const adjacentPoints = points
     .map((point) =>
@@ -81,42 +73,31 @@ function extracted(
     )
     .flat()
 
-  // console.log()
-  // printBoard(board, lowPoints, [[...adjacentPoints]])
-
-  // for (let j = 0; j < 100000000; j++) {
-  //   Math.random()
-  // }
-
   const morePoints = adjacentPoints.length
-    ? extracted(board, [...points, ...adjacentPoints], lowPoints)
+    ? calculateBasin(board, [...points, ...adjacentPoints])
     : []
   return [...points, ...adjacentPoints, ...morePoints]
 }
 
-const solution = (board: Board, lowPoints: Point[]): Basin[] => {
-  const basins = lowPoints
-    .map((point) => {
-      return extracted(board, [point], lowPoints)
-    })
-    .map((basin) => {
-      return Array.from(new Set(basin.map((point) => point.join(',')))).map(
+const getBasins = (board: Board, lowPoints: Point[]): Basin[] =>
+  lowPoints
+    .map((point) => calculateBasin(board, [point]))
+    .map((basin) =>
+      Array.from(new Set(basin.map((point) => point.join(',')))).map(
         (str) => str.split(',').map(toNumber) as Point,
-      )
-    })
+      ),
+    )
 
-  return basins.sort((b1, b2) => b2.length - b1.length) //.slice(0, 3) // ?
+function solution(inputData: string) {
+  const { board, lowPoints } = findLowPoints(inputData)
+  const basins = getBasins(board, lowPoints)
+  const largestBasins = basins
+    .sort((b1, b2) => b2.length - b1.length)
+    .slice(0, 3)
+  return largestBasins.map((b) => b.length).reduce(mul)
 }
 
-const { board, lowPoints } = findLowPoints(input)
-
-const basins = solution(board, lowPoints)
-console.log(
-  basins
-    .slice(0, 3)
-    .map((b) => b.length)
-    .reduce(mul),
-)
+console.log(solution(input))
 
 // printBoard(board, lowPoints, basins)
 // printBoard2(board, lowPoints, basins, basins.slice(0, 3))
