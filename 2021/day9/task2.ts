@@ -1,22 +1,19 @@
 import { input } from './input2'
 import { isTruthy, mul, toNumber } from '../../utils'
-import { range } from 'ramda'
+import { curry, range } from 'ramda'
 import { Basin, Board, Point } from './types'
 
-const isLowPoint = (x: number, y: number, board: Board): boolean => {
-  const xCheck = range(x - 1, x + 2).filter((v) => v >= 0 && v < board.length)
-  const yCheck = range(y - 1, y + 2).filter(
-    (v) => v >= 0 && v < board[x].length,
+const getPointValue = curry(
+  (board: Board, [x, y]: Point): number => board[x][y],
+)
+
+const isLowPoint = curry((board: Board, point: Point): boolean => {
+  const pointOnBoard = getPointValue(board)
+  const currValue = pointOnBoard(point)
+  return getAdjacentPoints(board, point).every(
+    (adjacentPoint) => currValue < pointOnBoard(adjacentPoint),
   )
-  const currValue = board[x][y]
-  return xCheck.every((xAdjacent) =>
-    yCheck.every(
-      (yAdjacent) =>
-        (x === xAdjacent && y === yAdjacent) ||
-        currValue < board[xAdjacent][yAdjacent],
-    ),
-  )
-}
+})
 
 const findLowPoints = (solutionInput: string) => {
   const board = solutionInput
@@ -24,25 +21,24 @@ const findLowPoints = (solutionInput: string) => {
     .split('\n')
     .map((line) => line.split('').map(toNumber))
 
-  let sum = 0
-  const lowPoints = [] as [number, number][]
-  for (let i = 0; i < board.length; i++) {
-    const line = board[i]
-    for (let j = 0; j < line.length; j++) {
-      if (isLowPoint(i, j, board)) {
-        lowPoints.push([i, j])
-        sum += board[i][j] + 1
-      }
-    }
+  const isLowPointOnBoard = isLowPoint(board)
+  const lowPoints = board
+    .map((line, x) => line.map((v, y) => [x, y] as Point))
+    .flat()
+    .filter(isLowPointOnBoard)
+  return {
+    board,
+    lowPoints,
   }
-  return { board, sum, lowPoints }
 }
 
-const getAdjacentPoints = (board: Board, [x, y]: Point): Point[] => {
-  const xRange = range(x - 1, x + 2).filter((v) => v >= 0 && v < board.length)
-  const yRange = range(y - 1, y + 2).filter(
-    (v) => v >= 0 && v < board[x].length,
-  )
+const getAdjacentPoints = curry((board: Board, [x, y]: Point): Point[] => {
+  const xRange = range(x - 1, x + 2)
+    .filter((v) => v >= 0)
+    .filter((v) => v < board.length)
+  const yRange = range(y - 1, y + 2)
+    .filter((v) => v >= 0)
+    .filter((v) => v < board[x].length)
 
   return xRange
     .map((xAdjacent) =>
@@ -56,7 +52,7 @@ const getAdjacentPoints = (board: Board, [x, y]: Point): Point[] => {
         .filter(isTruthy),
     )
     .flat()
-}
+})
 
 const isSlope = (board: Board, pStart: Point, pEnd: Point): boolean => {
   const [valueStart, valueEnd] = [pStart, pEnd].map((p) => board[p[0]][p[1]])
@@ -65,9 +61,10 @@ const isSlope = (board: Board, pStart: Point, pEnd: Point): boolean => {
 
 function calculateBasin(board: number[][], points: Point[]): Point[] {
   const pointsSet = new Set(points.map((p) => p.join(',')))
+  const adjacentPointsOnBoard = getAdjacentPoints(board)
   const adjacentPoints = points
     .map((point) =>
-      getAdjacentPoints(board, point)
+      adjacentPointsOnBoard(point)
         .filter((adjacent) => !pointsSet.has(adjacent.join(',')))
         .filter((p) => isSlope(board, point, p)),
     )
@@ -94,10 +91,10 @@ function solution(inputData: string) {
   const largestBasins = basins
     .sort((b1, b2) => b2.length - b1.length)
     .slice(0, 3)
+
+  // printBoard(board, lowPoints, basins)
+  // printBoard2(board, lowPoints, basins, largestBasins)
   return largestBasins.map((b) => b.length).reduce(mul)
 }
 
 console.log(solution(input))
-
-// printBoard(board, lowPoints, basins)
-// printBoard2(board, lowPoints, basins, basins.slice(0, 3))
