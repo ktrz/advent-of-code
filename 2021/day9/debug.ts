@@ -4,7 +4,7 @@ import { Basin, Board, Point } from './types'
 export const printBoard = (
   board: Board,
   lowPoints: Point[],
-  basins: Basin[],
+  basins: Basin[] = [[]],
 ) => {
   console.log(
     basins

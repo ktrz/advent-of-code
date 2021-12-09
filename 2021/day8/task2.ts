@@ -13,9 +13,7 @@ const solution = (solutionInput: string) =>
       mapping: deduceMapping([...trainingData, ...inputData]),
     }))
     .map(({ inputData, mapping }) =>
-      inputData
-        .map((key) => mapping[sortString(key)])
-        .join(''),
+      inputData.map((key) => mapping[sortString(key)]).join(''),
     )
     .map(toNumber)
     .reduce(add, 0)

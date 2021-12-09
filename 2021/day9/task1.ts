@@ -1,23 +1,7 @@
 import { input } from './input2'
 import { toNumber } from '../../utils'
 import { range } from 'ramda'
-import * as colors from 'colors'
-
-const printBoard = (board: number[][], lowPoints: [number, number][]) => {
-  console.log(
-    board
-      .map((line, i) => {
-        return line
-          .map((v, j) => {
-            return lowPoints.filter(([x, y]) => x === i && y === j).length
-              ? colors.bgMagenta.black(String(board[i][j]))
-              : String(board[i][j])
-          })
-          .join(' ')
-      })
-      .join('\n'),
-  )
-}
+import { printBoard } from './debug'
 
 const isLowPoint = (x: number, y: number, map: number[][]): boolean => {
   const xCheck = range(x - 1, x + 2).filter((v) => v >= 0 && v < map.length)
@@ -50,7 +34,6 @@ const solution = (solutionInput: string) => {
       }
     }
   }
-  lowPoints
   return { map, sum, lowPoints }
 }
 
@@ -58,4 +41,3 @@ const { map, sum, lowPoints } = solution(input)
 console.log(sum)
 
 printBoard(map, lowPoints)
-console.log()
