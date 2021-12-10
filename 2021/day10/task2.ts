@@ -1,6 +1,6 @@
 import { input } from './input2'
 import { last } from 'ramda'
-import { isTruthy, keyValuesS } from '../../utils'
+import { isTruthy, keyValuesS, sub } from '../../utils'
 
 const points: Record<string, number> = {
   ')': 1,
@@ -16,8 +16,8 @@ const solution = (data: string) => {
     .map(getLineCompletion)
     .filter(isTruthy)
     .map((c) => c.split(''))
-    .map((complement) => calculatePoints(complement))
-    .sort((a, b) => a - b)
+    .map(calculatePoints)
+    .sort(sub)
   const middleIndex = (points.length - 1) / 2
   return points[middleIndex]
 }
@@ -44,8 +44,6 @@ const getLineCompletion = (line: string): string => {
 }
 
 const calculatePoints = (complement: string[]): number =>
-  complement.reduce((score, v) => {
-    return score * 5 + points[v]
-  }, 0)
+  complement.reduce((score, v) => score * 5 + points[v], 0)
 
 console.log(solution(input))
