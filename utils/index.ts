@@ -1,3 +1,5 @@
+import { zip } from 'ramda'
+
 export const toNumber = (v: string) => +v
 
 export const sum = (a: number, b: number) => a + b
@@ -16,3 +18,18 @@ export const not =
     !fn(...args)
 
 export const greaterThan = (x: number) => (y: number) => y > x
+
+export const keyValues = <K extends string | number, V>(
+  keys: K[],
+  values: V[],
+) =>
+  zip(keys, values).reduce(
+    (obj, [key, value]) => ({
+      ...obj,
+      [key]: value,
+    }),
+    {} as Record<K, V>,
+  )
+
+export const keyValuesS = (keys: string, values: string) =>
+  keyValues(keys.split(''), values.split(''))
