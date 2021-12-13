@@ -1,9 +1,9 @@
 import {
+  arrowFunctionExpression,
   blockStatement,
   callExpression,
   exportNamedDeclaration,
   expressionStatement,
-  functionExpression,
   identifier,
   importDeclaration,
   importSpecifier,
@@ -45,8 +45,7 @@ export const createSolutionFileAst = () =>
     variableDeclaration('const', [
       variableDeclarator(
         identifier('solution'),
-        functionExpression(
-          null,
+        arrowFunctionExpression(
           [
             {
               ...identifier('inputValue'),
