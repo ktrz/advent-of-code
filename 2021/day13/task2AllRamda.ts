@@ -1,5 +1,5 @@
 import { input } from './input2'
-import { bendBoard, getFoldInstructions, inputToBoard } from './utils'
+import { bendBoard, getFoldInstructions, inputToBoard } from './utils-ramda'
 import { pipe } from 'ramda'
 import { Board, FoldInstruction } from './types'
 
@@ -17,13 +17,9 @@ const foldBoard = ([board, foldInstructions]: [Board, FoldInstruction[]]) =>
     board,
   )
 
-const solution = (inputValue: string) =>
-  pipe(
-    extractSubInputs,
-    parseSubInputs,
-    foldBoard,
-  )(inputValue)
-    .map((line) => line.join(''))
-    .join('\n')
+const printBoard = (board: Board) =>
+  board.map((line) => line.join('')).join('\n')
+
+const solution = pipe(extractSubInputs, parseSubInputs, foldBoard, printBoard)
 
 console.log(solution(input))
