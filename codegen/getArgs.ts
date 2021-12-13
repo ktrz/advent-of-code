@@ -26,9 +26,10 @@ export const getArgs = () => {
     .help()
     .alias('help', 'h')
 
+  const currentDate = new Date()
   const DEFAULT_ARGS: Args = {
-    day: 1,
-    year: 2021,
+    day: currentDate.getDate(),
+    year: currentDate.getFullYear(),
     outDir: '.',
   }
 
