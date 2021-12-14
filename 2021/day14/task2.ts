@@ -6,12 +6,12 @@ type CountMap = Record<string, bigint>
 
 const solution = pipe(
   (inputValue) => inputValue.trim().split('\n\n'),
-  ([ initialState, templates ]: string[]) => ({
+  ([initialState, templates]: string[]) => ({
     initialState,
     templates: templates
       .split('\n')
       .map((template) => template.split(' -> '))
-      .map(([ pair, insert ]) => ({ pair, insert })),
+      .map(([pair, insert]) => ({ pair, insert })),
   }),
   ({ initialState, templates }) => ({
     initialState,
@@ -31,9 +31,9 @@ const solution = pipe(
     templateMap: templates.reduce(
       (templateMap, { pair, insert }) => ({
         ...templateMap,
-        [pair]: [ pair[0] + insert, insert + pair[1] ] as [ string, string ],
+        [pair]: [pair[0] + insert, insert + pair[1]] as [string, string],
       }),
-      {} as Record<string, [ string, string ]>,
+      {} as Record<string, [string, string]>,
     ),
   }),
   ({ initialPairs, templateMap, initialState }) => ({
@@ -41,18 +41,18 @@ const solution = pipe(
     templateCountMap: range(0, 40).reduce(
       (result: CountMap) =>
         Object.entries(result)
-          .map(([ pair, count ]) =>
+          .map(([pair, count]) =>
             templateMap[pair]
               ? templateMap[pair].map((template) => ({
-                count,
-                template,
-              }))
-              : [
-                {
                   count,
-                  template: pair,
-                },
-              ],
+                  template,
+                }))
+              : [
+                  {
+                    count,
+                    template: pair,
+                  },
+                ],
           )
           .flat()
           .reduce(
@@ -66,9 +66,9 @@ const solution = pipe(
     ),
   }),
   ({ templateCountMap, initialState }) => ({ templateCountMap, initialState }),
-  ({ templateCountMap, initialState }) => {
-    const charCountMap = Object.entries(templateCountMap)
-      .map(([ template, count ]) =>
+  ({ templateCountMap, initialState }) =>
+    Object.entries(templateCountMap)
+      .map(([template, count]) =>
         template.split('').map((char) => ({ char, count })),
       )
       .flat()
@@ -77,15 +77,14 @@ const solution = pipe(
           ...countMap,
           [char]: (countMap[char] || 0n) + count,
         }),
-        {} as CountMap,
-      )
-    charCountMap[initialState[0]] += 1n
-    charCountMap[last(initialState)] += 1n
-    const inverterMap = invert(charCountMap)
-    return Object.keys(inverterMap).map(toNumber)
-  },
-  (counts) =>
-    (Math.max(...counts) - Math.min(...counts)) / 2,
+        {
+          [initialState[0]]: 1n,
+          [last(initialState)]: 1n,
+        },
+      ),
+  (charCountMap) => invert(charCountMap),
+  (invertedCharMap) => Object.keys(invertedCharMap).map(toNumber),
+  (counts) => (Math.max(...counts) - Math.min(...counts)) / 2,
 )
 
 console.log(solution(input)) // ?
