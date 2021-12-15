@@ -3,7 +3,7 @@ import { textToMatrix, toNumber } from '../../utils'
 import { last } from 'ramda'
 import { repeatMatrix } from './utils'
 import { GraphPoint } from './types'
-import { dijkstra } from './dijkstra'
+import { dijkstraAllPaths } from './dijkstraAllPaths'
 
 const solution = (inputValue: string) => {
   const matrix = textToMatrix(
@@ -18,7 +18,7 @@ const solution = (inputValue: string) => {
     }),
   )
 
-  return dijkstra(repeatMatrix(matrix, 5))
+  return dijkstraAllPaths(repeatMatrix(matrix, 5))
 }
 
 {

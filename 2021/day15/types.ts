@@ -11,3 +11,5 @@ export interface GraphPoint {
   path: GraphPath
   from?: Point[]
 }
+
+export type Matrix<T> = T[][]
