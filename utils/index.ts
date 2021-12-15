@@ -1,4 +1,4 @@
-import { zip } from 'ramda'
+import { identity, zip } from 'ramda'
 
 export const toNumber = (v: string) => +v
 
@@ -34,3 +34,26 @@ export const keyValues = <K extends string | number, V>(
 
 export const keyValuesS = (keys: string, values: string) =>
   keyValues(keys.split(''), values.split(''))
+
+export interface Point {
+  x: number
+  y: number
+}
+
+export function textToMatrix(
+  text: string,
+  valueMapping?: (from: string, point: Point) => string,
+): string[][]
+export function textToMatrix<V>(
+  text: string,
+  valueMapping?: (from: string, point: Point) => V,
+): V[][]
+export function textToMatrix(
+  text: string,
+  valueMapping: (from: string, point: Point) => any = identity,
+): any[][] {
+  return text
+    .trim()
+    .split('\n')
+    .map((line, y) => line.split('').map((v, x) => valueMapping(v, { x, y })))
+}
