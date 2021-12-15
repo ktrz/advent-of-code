@@ -99,7 +99,10 @@ const getCurrentPath =
 
     return {
       from: entry,
-      costs: [...(matrixPosition(entry).path?.costs || []), matrixPosition({x,y})]
+      costs: [
+        ...(matrixPosition(entry).path?.costs || []),
+        matrixPosition({ x, y }),
+      ],
     }
   }
 
